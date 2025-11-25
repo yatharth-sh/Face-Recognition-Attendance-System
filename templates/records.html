@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2>Attendance Records</h2>
+        <a href="/api/export_csv" class="btn btn-primary">Export CSV</a>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+            <tr style="border-bottom: 2px solid #444;">
+                <th style="padding: 1rem; color: #aaa;">Date</th>
+                <th style="padding: 1rem; color: #aaa;">Name</th>
+                <th style="padding: 1rem; color: #aaa;">In Time</th>
+                <th style="padding: 1rem; color: #aaa;">Out Time</th>
+                <th style="padding: 1rem; color: #aaa;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in records %}
+            <tr style="border-bottom: 1px solid #333;">
+                <td style="padding: 1rem;">{{ row.Date }}</td>
+                <td style="padding: 1rem; font-weight: 600;">{{ row.Name }}</td>
+                <td style="padding: 1rem; color: var(--success-color);">{{ row.InTime }}</td>
+                <td style="padding: 1rem; color: var(--danger-color);">{{ row.OutTime }}</td>
+                <td style="padding: 1rem;">
+                    {% if row.InTime and row.OutTime %}
+                    <span
+                        style="background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">Present</span>
+                    {% elif row.InTime %}
+                    <span
+                        style="background: rgba(59, 130, 246, 0.2); color: #3b82f6; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">In
+                        Class</span>
+                    {% else %}
+                    <span
+                        style="background: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">Absent</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

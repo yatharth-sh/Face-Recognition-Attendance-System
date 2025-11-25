@@ -1,0 +1,118 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1fr 350px; gap: 2rem;">
+    <!-- Left Column: Video Feed -->
+    <div class="card" style="padding: 0; overflow: hidden; display: flex; justify-content: center; background: black;">
+        <img src="{{ url_for('video_feed') }}"
+            style="width: 100%; height: auto; max-height: 600px; object-fit: contain;">
+    </div>
+
+    <!-- Right Column: Controls -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Session Control Card -->
+        <div class="card">
+            <h3>Session Controls</h3>
+            <div id="session-status"
+                style="margin-bottom: 1rem; padding: 1rem; background: #2d2d2d; border-radius: 8px; text-align: center;">
+                <div style="font-size: 0.9rem; color: #aaa;">Current Status</div>
+                <div id="status-text" style="font-size: 1.2rem; font-weight: bold; color: #fff;">IDLE</div>
+                <div id="timer"
+                    style="font-size: 1.5rem; font-family: monospace; color: var(--accent-color); margin-top: 0.5rem;">
+                    00:00</div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; flex-direction: column;">
+                <button class="btn btn-success" onclick="startSession('IN')">Start Class (In-Time)</button>
+                <button class="btn btn-danger" onclick="startSession('OUT')">End Class (Out-Time)</button>
+            </div>
+        </div>
+
+        <!-- Registration Card -->
+        <div class="card">
+            <h3>Register New Student</h3>
+            <input type="text" id="regName" placeholder="Student Name"
+                style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; background: #2d2d2d; border: 1px solid #444; color: white; border-radius: 6px; box-sizing: border-box;">
+            <button class="btn btn-primary" style="width: 100%;" onclick="registerFace()">Capture & Register</button>
+            <div id="reg-status" style="margin-top: 1rem; font-size: 0.9rem; color: #aaa;"></div>
+        </div>
+
+        <!-- Danger Zone Card -->
+        <div class="card">
+            <h3 style="color: var(--danger-color); font-size: 1.1rem;">Danger Zone</h3>
+            <button class="btn btn-danger" style="width: 100%;" onclick="resetData()">Reset All Data</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateStatus() {
+        fetch('/api/status')
+            .then(r => r.json())
+            .then(data => {
+                const statusText = document.getElementById('status-text');
+                const timer = document.getElementById('timer');
+
+                statusText.innerText = data.status;
+                if (data.status === 'IN_WINDOW') {
+                    statusText.style.color = 'var(--success-color)';
+                    statusText.innerText = "ATTENDANCE OPEN (IN)";
+                } else if (data.status === 'OUT_WINDOW') {
+                    statusText.style.color = 'var(--danger-color)';
+                    statusText.innerText = "ATTENDANCE OPEN (OUT)";
+                } else {
+                    statusText.style.color = '#fff';
+                }
+
+                if (data.remaining > 0) {
+                    const mins = Math.floor(data.remaining / 60);
+                    const secs = Math.floor(data.remaining % 60);
+                    timer.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                } else {
+                    timer.innerText = "00:00";
+                }
+            });
+    }
+
+    function startSession(type) {
+        fetch(`/api/session/${type}`, { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) showToast(data.error, 'error');
+                else showToast(data.message, 'success');
+                updateStatus();
+            });
+    }
+
+    function registerFace() {
+        const name = document.getElementById('regName').value;
+        if (!name) return showToast("Please enter a name", 'error');
+
+        document.getElementById('reg-status').innerText = "Capturing...";
+        fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name })
+        })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('reg-status').innerText = "";
+                showToast(data.message, 'success');
+            });
+    }
+
+    function resetData() {
+        if (!confirm("Are you sure? This will delete ALL registered faces!")) return;
+
+        fetch('/api/reset', { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                showToast(data.message, 'success');
+                setTimeout(() => location.reload(), 1500);
+            });
+    }
+
+    setInterval(updateStatus, 1000);
+    updateStatus();
+</script>
+{% endblock %}
