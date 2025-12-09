@@ -2,7 +2,6 @@ import cv2
 from flask import Flask, Response, render_template, request, jsonify, redirect, url_for, session
 from face_system import FaceSystem
 import time
-import threading
 import pandas as pd
 import os
 
