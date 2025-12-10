@@ -203,11 +203,7 @@ def export_csv():
         )
     return "No records found."
 
-@app.route('/api/reset', methods=['POST'])
-def reset_data():
-    if 'user' not in session: return jsonify({"message": "Unauthorized"}), 401
-    success, msg = face_sys.reset_data()
-    return jsonify({"message": msg})
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=False)

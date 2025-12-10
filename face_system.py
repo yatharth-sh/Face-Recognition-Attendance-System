@@ -181,20 +181,7 @@ class FaceSystem:
             
         return results
 
-    def reset_data(self):
-        self.embeddings = []
-        self.labels = []
-        self.label_map = {}
-        self.model_trained = False
-        self.classifier = None
-        
-        if os.path.exists(self.data_path):
-            os.remove(self.data_path)
-        if os.path.exists(self.classifier_path):
-            os.remove(self.classifier_path)
-        
-        print("System reset: All face data cleared.")
-        return True, "System reset successfully"
+
 
     def log_attendance(self, name, mode):
         # mode: 'IN' or 'OUT'

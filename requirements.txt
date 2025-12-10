@@ -1,5 +1,0 @@
-opencv-python
-flask
-pandas
-numpy
-scikit-learn

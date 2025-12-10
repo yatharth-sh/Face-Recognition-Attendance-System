@@ -77,7 +77,7 @@ If you prefer to run it manually:
 
 ```bash
 pip install -r requirements.txt
-python DemoVersion.py
+python app.py
 ```
 
 ---
@@ -86,7 +86,7 @@ python DemoVersion.py
 
 ```
 Face-Recognition-Attendance-System/
-├── DemoVersion.py          # Main Flask Application
+├── app.py          # Main Flask Application
 ├── face_system.py          # Core Face Recognition Logic
 ├── requirements.txt        # Project Dependencies
 ├── run.bat                 # Auto-run Script for Windows

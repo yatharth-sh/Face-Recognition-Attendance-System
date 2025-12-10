@@ -11,5 +11,5 @@ echo Installing dependencies...
 pip install -r requirements.txt
 
 echo Starting Face Recognition System...
-python DemoVersion.py
+python app.py
 pause
